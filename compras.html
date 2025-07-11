@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hamburgueria</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="assests/CSS/style.css" />
+
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    main {
+      flex: 1;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <img src="assests/imgs/stiven01-Photoroom.png" alt="Logo da Hamburgueria" class="logo-img" />
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav d-flex align-items-center gap-4">
+          <li class="nav-item">
+            <a class="nav-link active d-flex align-items-center" href="index.html">
+              <i class="fas fa-home me-2"></i>Início
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="menu.html">
+              <i class="fas fa-utensils me-2"></i>Menu
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="compras.html">
+              <i class="fas fa-shopping-cart me-2"></i>Carrinho de Compras
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="sobre.html">
+              <i class="fas fa-info-circle me-2"></i>Sobre
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="contato.html">
+              <i class="fas fa-envelope me-2"></i>Contato
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main>
+    <div class="container my-5">
+      <h2 class="text-center mb-4">🛒 Carrinho de Compras</h2>
+
+      <div id="carrinho" class="mb-4"></div>
+
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Calcular Frete</h5>
+
+          <div class="mb-3 p-2 bg-light rounded">
+            <small class="text-muted">Nossa localização:</small>
+            <p class="mb-0 fw-bold" id="endereco-loja">
+              Rua Manaus, 37 - Jardim Marsola, Campo Limpo Paulista - SP
+            </p>
+          </div>
+
+          <div class="mb-3">
+            <label for="cep-cliente" class="form-label">Seu CEP</label>
+            <input type="text" id="cep-cliente" class="form-control" placeholder="Digite seu CEP">
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-md-6">
+              <input type="text" id="rua-cliente" class="form-control" placeholder="Rua">
+            </div>
+            <div class="col-md-3">
+              <input type="text" id="numero-cliente" class="form-control" placeholder="Número">
+            </div>
+            <div class="col-md-3">
+              <input type="text" id="bairro-cliente" class="form-control" placeholder="Bairro">
+            </div>
+          </div>
+
+          <button class="btn btn-warning w-100" onclick="calcularFretePorRaio()">
+            <i class="fas fa-truck me-1"></i> Calcular Frete
+          </button>
+
+          <div id="resultado-frete" class="mt-3"></div>
+        </div>
+      </div>
+
+      <div id="frete-info" class="mb-3"></div>
+      <div id="total" class="mb-4"></div>
+
+      <div class="text-center">
+        <button class="btn btn-success btn-lg" onclick="finalizarPedido()">
+          <i class="fas fa-check-circle me-2"></i> Finalizar Pedido
+        </button>
+      </div>
+    </div>
+
+    <div id="carrinho-itens"></div>
+  </main>
+
+  <!-- FOOTER COLADO NO FIM -->
+  <footer class="bg-dark text-white pt-0 mt-auto">
+
+    <!-- Faixa vermelha do iFood -->
+    <div class="bg-danger text-white text-center py-3">
+      <a href="https://www.ifood.com.br"
+        class="d-inline-flex align-items-center justify-content-center text-white text-decoration-none"
+        style="gap: 8px;">
+        <img src="assests/imgs/ifood-logo-3.png" alt="iFood" style="height: 24px;" />
+        <span style="font-family: Verdana">PEÇA NO IFOOD</span>
+      </a>
+    </div>
+
+    <div class="container footer-content py-4 d-flex flex-column flex-lg-row justify-content-between">
+      <div class="footer-box">
+        <h5 class="text-warning">Horário de Funcionamento:</h5>
+        <p class="mb-2"><strong>Domingo a Quinta:</strong><br />11h às 23h</p>
+        <p class="mb-0"><strong>Sexta e Sábado:</strong><br />11h às 23h45</p>
+      </div>
+      <div class="footer-box text-center text-lg-end">
+        <a href="https://www.instagram.com/seuInstagram000" class="text-white text-decoration-none d-block mb-2"
+          target="_blank">
+          <i class="fab fa-instagram me-1"></i> Instagram
+        </a>
+        <a href="https://wa.me/seuNumero" class="text-white text-decoration-none d-block mb-2" target="_blank">
+          <i class="fab fa-whatsapp me-1"></i> WhatsApp
+        </a>
+        <a href="tel:+55seuNumero" class="text-white text-decoration-none d-block">
+          <i class="fas fa-phone-alt me-1"></i> Telefone
+        </a>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <p class="m-0">&copy; 2025 Sua Empresa. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="assests/JavaScript/carrinho.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

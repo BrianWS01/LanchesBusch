@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hamburgueria</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assests/CSS/style.css">
+    <style>
+        /* Estilos para os controles de quantidade */
+        /* Estilos para os controles de quantidade */
+        .personalizacoes {
+            display: none;
+            margin-top: 10px;
+            padding: 12px 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            width: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card {
+            margin-bottom: rem;
+            /* Espaço consistente entre cards */
+        }
+
+        .tab-pane .row {
+            margin-bottom: 0rem;
+            /* Espaço abaixo da linha de cards */
+        }
+
+        .personalizacoes label.form-label {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            display: block;
+            color: #333;
+        }
+
+        .personalizacoes div {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .personalizacoes label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #444;
+        }
+
+        .personalizacoes input[type="number"] {
+            width: 60px;
+            padding: 5px 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+
+        .personalizacoes input[type="number"]::-webkit-outer-spin-button,
+        .personalizacoes input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            /* Remove setas no Chrome/Safari */
+            margin: 0;
+        }
+
+        .personalizacoes input[type="number"]:focus {
+            border-color: #ffc107;
+            outline: none;
+        }
+
+        .personalizacoes label>input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* Se quiser dar uma melhorada no botão Confirmar quando visível */
+        .btn-confirmar {
+            display: none;
+            margin-top: 15px;
+            width: 100%;
+            background-color: #28a745;
+            border-color: #28a745;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-confirmar:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+        /* Feedback message */
+        .feedback-message {
+            font-size: 0.9rem;
+            margin-top: 8px;
+            min-height: 20px;
+            color: #28a745;
+            text-align: center;
+        }
+
+        /* Para alinhamento geral do botão e controle dentro do card */
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* Quantidade controlador (já enviado por você, só adicionei justify-content) */
+        .quantidade-controlador {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        .quantidade-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ffc107;
+            background-color: transparent;
+            color: #ffc107;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quantidade-btn:hover {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .quantidade-value {
+            min-width: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        body>*:last-child {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .mt-custom {
+            margin-top: 10px;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .tab-pane {
+            padding-bottom: 2rem;
+            /* Espaço consistente abaixo dos cards */
+        }
+
+        .bg-danger {
+            margin-top: 0 !important;
+            /* Remove margem extra */
+        }
+
+        @media (max-width: 768px) {
+            .quantidade-controlador {
+                gap: 6px;
+                justify-content: center;
+            }
+
+            .quantidade-btn,
+            .input-num-control button {
+                width: 28px;
+                height: 28px;
+                font-size: 0.9rem;
+            }
+
+            .quantidade-value {
+                font-size: 1rem;
+            }
+
+            .input-num-control {
+                flex-direction: row;
+                flex-wrap: wrap;
+                margin-left: 0;
+            }
+
+            .input-num-control input[type="number"] {
+                width: 50px;
+                font-size: 0.9rem;
+            }
+
+            .btn-confirmar {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="assests/imgs/stiven01-Photoroom.png" alt="Logo da Hamburgueria" class="logo-img">
+            </a>
+
+            <body class="menu-bg"></body>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav d-flex align-items-center gap-4">
+                    <li class="nav-item">
+                        <a class="nav-link active d-flex align-items-center" href="index.html">
+                            <i class="fas fa-home me-2"></i>Início
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center" href="menu.html">
+                            <i class="fas fa-utensils me-2"></i>Menu
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center" href="compras.html">
+                            <i class="fas fa-shopping-cart me-2"></i>Carrinho de Compras
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center" href="sobre.html">
+                            <i class="fas fa-info-circle me-2"></i>Sobre
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center" href="contato.html">
+                            <i class="fas fa-envelope me-2"></i>Contato
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section id="menu" class="container py-5">
+        <h2 class="text-center mb-5 text-warning">Nosso Cardápio</h2>
+
+        <!-- Abas de Categoria -->
+        <ul class="nav nav-tabs justify-content-center mb-4" id="menuTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="trad-tab" data-bs-toggle="tab" data-bs-target="#trad" type="button"
+                    role="tab">Tradicionais</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="esp-tab" data-bs-toggle="tab" data-bs-target="#esp" type="button"
+                    role="tab">Especiais</button>
+            </li>
+        </ul>
+
+        <!-- Conteúdo das Abas -->
+        <div class="tab-content" id="menuTabsContent">
+
+            <!-- Aba Tradicionais -->
+            <div class="tab-pane fade show active" id="trad" role="tabpanel" aria-labelledby="trad-tab">
+                <div class="row g-4">
+                    <!-- X-Tudo -->
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow">
+                            <img src="assests/imgs/x-tudo.png" class="card-img-top" alt="X-Tudo">
+                            <div class="card-body">
+                                <h5 class="card-title">X-Tudo</h5>
+                                <p class="card-text">Hambúrguer, Ovo, Bacon, Presunto, Queijo, Alface e Tomate.</p>
+                                <p class="text-danger fw-bold">R$ 22,00</p>
+                                <div class="btn-container">
+                                    <button class="btn btn-warning btn-adicionar"
+                                        onclick="mostrarControles(this, 'X-Tudo', 22.00, 'assests/imgs/x-tudo.png')">
+                                        <i class="fas fa-cart-plus me-1"></i> Adicionar
+                                    </button>
+                                    <div class="quantidade-controlador" style="display:none;">
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, -1)">-</button>
+                                        <span class="quantidade-value fs-5">1</span>
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, 1)">+</button>
+                                    </div>
+                                    <div class="personalizacoes" style="display:none;">
+                                        <label for="obs-X-Tudo" class="form-label">Observações:</label>
+                                        <input type="text" id="obs-X-Tudo" class="form-control"
+                                            placeholder="Ex: Sem Maionese, Sem Ketchup">
+                                        <label class="mt-2 form-label">Adicionar ingredientes:</label>
+                                        <div>
+                                            <label>Hambúrguer: <input type="number"
+                                                    name="ingredienteQtd-Hambúrguer-X-Tudo" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Picles: <input type="number" name="ingredienteQtd-Picles-X-Tudo"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Alface: <input type="number" name="ingredienteQtd-Alface-X-Tudo"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Queijo: <input type="number" name="ingredienteQtd-Queijo-X-Tudo"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-success btn-confirmar mt-2" style="display:none;"
+                                        onclick="confirmarAdicao(this, 'X-Tudo', 22.00, 'assests/imgs/x-tudo.png')">Confirmar</button>
+                                    <button class="btn btn-secondary btn-voltar mt-2" style="display:none;"
+                                        onclick="voltarMenu(this)">Voltar ao menu</button>
+                                    <div class="feedback-message text-success mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- X-Bacon -->
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow">
+                            <img src="assests/imgs/x-Bacon.jpg" class="card-img-top" alt="X-Bacon">
+                            <div class="card-body">
+                                <h5 class="card-title">X-Bacon</h5>
+                                <p class="card-text">Hambúrguer com Queijo, Alface, Cebola, Tomate, Bacon e Maionese
+                                    caseira.</p>
+                                <p class="text-danger fw-bold">R$ 20,00</p>
+                                <div class="btn-container">
+                                    <button class="btn btn-warning btn-adicionar"
+                                        onclick="mostrarControles(this, 'X-Bacon', 20.00, 'assests/imgs/x-Bacon.jpg')">
+                                        <i class="fas fa-cart-plus me-1"></i> Adicionar
+                                    </button>
+                                    <div class="quantidade-controlador" style="display:none;">
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, -1)">-</button>
+                                        <span class="quantidade-value fs-5">1</span>
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, 1)">+</button>
+                                    </div>
+                                    <div class="personalizacoes" style="display:none;">
+                                        <label for="obs-X-Bacon" class="form-label">Observações:</label>
+                                        <input type="text" id="obs-X-Bacon" class="form-control"
+                                            placeholder="Ex: Sem Maionese, Sem Ketchup">
+                                        <label class="mt-2 form-label">Adicionar ingredientes:</label>
+                                        <div>
+                                            <label>Hambúrguer: <input type="number"
+                                                    name="ingredienteQtd-Hambúrguer-X-Bacon" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Picles: <input type="number" name="ingredienteQtd-Picles-X-Bacon"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Alface: <input type="number" name="ingredienteQtd-Alface-X-Bacon"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Queijo: <input type="number" name="ingredienteQtd-Queijo-X-Bacon"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-success btn-confirmar mt-2" style="display:none;"
+                                        onclick="confirmarAdicao(this, 'X-Bacon', 20.00, 'assests/imgs/x-Bacon.jpg')">Confirmar</button>
+                                    <button class="btn btn-secondary btn-voltar mt-2" style="display:none;"
+                                        onclick="voltarMenu(this)">Voltar ao menu</button>
+                                    <div class="feedback-message text-success mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- X-Salada -->
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow">
+                            <img src="assests/imgs/amirali-mirhashemian-sc5sTPMrVfk-unsplash.jpg" class="card-img-top"
+                                alt="X-Salada">
+                            <div class="card-body">
+                                <h5 class="card-title">X-Salada</h5>
+                                <p class="card-text">Hambúrguer com Queijo, Alface, Cebola, Picles, Tomate e Maionese
+                                    caseira.</p>
+                                <p class="text-danger fw-bold">R$ 18,00</p>
+                                <div class="btn-container">
+                                    <button class="btn btn-warning btn-adicionar"
+                                        onclick="mostrarControles(this, 'X-Salada', 18.00, 'assests/imgs/amirali-mirhashemian-sc5sTPMrVfk-unsplash.jpg')">
+                                        <i class="fas fa-cart-plus me-1"></i> Adicionar
+                                    </button>
+                                    <div class="quantidade-controlador" style="display:none;">
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, -1)">-</button>
+                                        <span class="quantidade-value fs-5">1</span>
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, 1)">+</button>
+                                    </div>
+                                    <div class="personalizacoes" style="display:none;">
+                                        <label for="obs-X-Salada" class="form-label">Observações:</label>
+                                        <input type="text" id="obs-X-Salada" class="form-control"
+                                            placeholder="Ex: Sem Maionese, Sem Ketchup">
+                                        <label class="mt-2 form-label">Adicionar ingredientes:</label>
+                                        <div>
+                                            <label>Hambúrguer: <input type="number"
+                                                    name="ingredienteQtd-Hambúrguer-X-Salada" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Picles: <input type="number" name="ingredienteQtd-Picles-X-Salada"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Alface: <input type="number"
+                                                    name="ingredienteQtd-Alface-X-Salada" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Queijo: <input type="number" name="ingredienteQtd-Queijo-X-Salada"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-success btn-confirmar mt-2" style="display:none;"
+                                        onclick="confirmarAdicao(this, 'X-Salada', 18.00, 'assests/imgs/amirali-mirhashemian-sc5sTPMrVfk-unsplash.jpg')">Confirmar</button>
+                                    <button class="btn btn-secondary btn-voltar mt-2" style="display:none;"
+                                        onclick="voltarMenu(this)">Voltar ao menu</button>
+                                    <div class="feedback-message text-success mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- X-Egg -->
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow">
+                            <img src="assests/imgs/pexels-pedrofurtadoo-31450813.jpg" class="card-img-top" alt="X-Egg">
+                            <div class="card-body">
+                                <h5 class="card-title">X-Egg</h5>
+                                <p class="card-text">Clássico com hambúrguer, Queijo e Ovo Frito na chapa.</p>
+                                <p class="text-danger fw-bold">R$ 19,00</p>
+                                <div class="btn-container">
+                                    <button class="btn btn-warning btn-adicionar"
+                                        onclick="mostrarControles(this, 'X-Egg', 19.00, 'assests/imgs/pexels-pedrofurtadoo-31450813.jpg')">
+                                        <i class="fas fa-cart-plus me-1"></i> Adicionar
+                                    </button>
+                                    <div class="quantidade-controlador" style="display:none;">
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, -1)">-</button>
+                                        <span class="quantidade-value fs-5">1</span>
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, 1)">+</button>
+                                    </div>
+                                    <div class="personalizacoes" style="display:none;">
+                                        <label for="obs-X-Egg" class="form-label">Observações:</label>
+                                        <input type="text" id="obs-X-Egg" class="form-control"
+                                            placeholder="Ex: Sem Maionese, Sem Ketchup">
+                                        <label class="mt-2 form-label">Adicionar ingredientes:</label>
+                                        <div>
+                                            <label>Hambúrguer: <input type="number"
+                                                    name="ingredienteQtd-Hambúrguer-X-Egg" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Picles: <input type="number" name="ingredienteQtd-Picles-X-Egg"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Alface: <input type="number" name="ingredienteQtd-Alface-X-Egg"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Queijo: <input type="number" name="ingredienteQtd-Queijo-X-Egg"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-success btn-confirmar mt-2" style="display:none;"
+                                        onclick="confirmarAdicao(this, 'X-Egg', 19.00, 'assests/imgs/pexels-pedrofurtadoo-31450813.jpg')">Confirmar</button>
+                                    <button class="btn btn-secondary btn-voltar mt-2" style="display:none;"
+                                        onclick="voltarMenu(this)">Voltar ao menu</button>
+                                    <div class="feedback-message text-success mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- X-Calabresa -->
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow">
+                            <img src="assests/imgs/pexels-pedrofurtadoo-29819317.jpg" class="card-img-top"
+                                alt="X-Calabresa">
+                            <div class="card-body">
+                                <h5 class="card-title">X-Calabresa</h5>
+                                <p class="card-text">Calabresa Acebolada, Queijo e Maionese Temperada.</p>
+                                <p class="text-danger fw-bold">R$ 21,00</p>
+                                <div class="btn-container">
+                                    <button class="btn btn-warning btn-adicionar"
+                                        onclick="mostrarControles(this, 'X-Calabresa', 21.00, 'assests/imgs/pexels-pedrofurtadoo-29819317.jpg')">
+                                        <i class="fas fa-cart-plus me-1"></i> Adicionar
+                                    </button>
+                                    <div class="quantidade-controlador"
+                                        style="display:none; align-items:center; gap:5px; margin-top: 10px;">
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, -1)">-</button>
+                                        <span class="quantidade-value fs-5">1</span>
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, 1)">+</button>
+                                    </div>
+                                    <div class="personalizacoes" style="display:none; margin-top: 10px;">
+                                        <label for="obs-X-Calabresa" class="form-label">Observações:</label>
+                                        <input type="text" id="obs-X-Calabresa" class="form-control"
+                                            placeholder="Ex: Sem Maionese, Sem Ketchup">
+                                        <label class="mt-2 form-label">Adicionar ingredientes:</label>
+                                        <div>
+                                            <label>Hambúrguer: <input type="number"
+                                                    name="ingredienteQtd-Hambúrguer-X-Calabresa" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Picles: <input type="number" name="ingredienteQtd-Picles-X-Calabresa"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Alface: <input type="number"
+                                                    name="ingredienteQtd-Alface-X-Calabresa" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Queijo: <input type="number" name="ingredienteQtd-Queijo-X-Calabresa"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-success btn-confirmar mt-2" style="display:none;"
+                                        onclick="confirmarAdicao(this, 'X-Calabresa', 21.00, 'assests/imgs/pexels-pedrofurtadoo-29819317.jpg')">Confirmar</button>
+                                    <button class="btn btn-secondary btn-voltar mt-2" style="display:none;"
+                                        onclick="voltarMenu(this)">Voltar ao menu</button>
+                                    <div class="feedback-message text-success mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- X-Frango -->
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow">
+                            <img src="assests/imgs/pexels-jonathanborba-2983103.jpg" class="card-img-top"
+                                alt="X-Frango">
+                            <div class="card-body">
+                                <h5 class="card-title">X-Frango</h5>
+                                <p class="card-text">Filé de Frango, Queijo Cheddar e Molho Barbecue.</p>
+                                <p class="text-danger fw-bold">R$ 20,00</p>
+                                <div class="btn-container">
+                                    <button class="btn btn-warning btn-adicionar"
+                                        onclick="mostrarControles(this, 'X-Frango', 20.00, 'assests/imgs/pexels-jonathanborba-2983103.jpg')">
+                                        <i class="fas fa-cart-plus me-1"></i> Adicionar
+                                    </button>
+                                    <div class="quantidade-controlador"
+                                        style="display:none; align-items:center; gap:5px; margin-top: 10px;">
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, -1)">-</button>
+                                        <span class="quantidade-value fs-5">1</span>
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, 1)">+</button>
+                                    </div>
+                                    <div class="personalizacoes" style="display:none; margin-top: 10px;">
+                                        <label for="obs-X-Frango" class="form-label">Observações:</label>
+                                        <input type="text" id="obs-X-Frango" class="form-control"
+                                            placeholder="Ex: Sem Maionese, Sem Ketchup">
+                                        <label class="mt-2 form-label">Adicionar ingredientes:</label>
+                                        <div>
+                                            <label>Hambúrguer: <input type="number"
+                                                    name="ingredienteQtd-Hambúrguer-X-Frango" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Picles: <input type="number" name="ingredienteQtd-Picles-X-Frango"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Alface: <input type="number"
+                                                    name="ingredienteQtd-Alface-X-Frango" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Queijo: <input type="number" name="ingredienteQtd-Queijo-X-Frango"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-success btn-confirmar mt-2" style="display:none;"
+                                        onclick="confirmarAdicao(this, 'X-Frango', 20.00, 'assests/imgs/pexels-jonathanborba-2983103.jpg')">Confirmar</button>
+                                    <button class="btn btn-secondary btn-voltar mt-2" style="display:none;"
+                                        onclick="voltarMenu(this)">Voltar ao menu</button>
+                                    <div class="feedback-message text-success mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aba Especiais -->
+            <div class="tab-pane fade" id="esp" role="tabpanel" aria-labelledby="esp-tab">
+                <div class="row g-4">
+                    <!-- Burger Supremo -->
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow">
+                            <img src="assests/imgs/amanda-lim--FWqmBtcyqo-unsplash.jpg" class="card-img-top"
+                                alt="Burger Supremo">
+                            <div class="card-body">
+                                <h5 class="card-title">Burger Supremo</h5>
+                                <p class="card-text">Hambúrguer de Blend Premium, Queijo Cheddar Envelhecido,
+                                    Cebola Caramelizada, Bacon Crocante, Molho Especial da Casa.</p>
+                                <p class="text-danger fw-bold">R$ 28,00</p>
+                                <div class="btn-container">
+                                    <button class="btn btn-warning btn-adicionar"
+                                        onclick="mostrarControles(this, 'Burger Supremo', 28.00, 'assests/imgs/amanda-lim--FWqmBtcyqo-unsplash.jpg')">
+                                        <i class="fas fa-cart-plus me-1"></i> Adicionar
+                                    </button>
+                                    <div class="quantidade-controlador" style="display:none;">
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, -1)">-</button>
+                                        <span class="quantidade-value fs-5">1</span>
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, 1)">+</button>
+                                    </div>
+                                    <div class="personalizacoes" style="display:none;">
+                                        <label for="obs-Burger-Supremo" class="form-label">Observações:</label>
+                                        <input type="text" id="obs-Burger-Supremo" class="form-control"
+                                            placeholder="Ex: Sem Cebola, molho à parte">
+                                        <label class="mt-2 form-label">Adicionar ingredientes:</label>
+                                        <div>
+                                            <label>Bacon Extra: <input type="number"
+                                                    name="ingredienteQtd-Bacon-Burger-Supremo" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Queijo Extra: <input type="number"
+                                                    name="ingredienteQtd-Queijo-Burger-Supremo" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Molho Especial: <input type="number"
+                                                    name="ingredienteQtd-Molho-Burger-Supremo" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-success btn-confirmar mt-2" style="display:none;"
+                                        onclick="confirmarAdicao(this, 'Burger Supremo', 28.00, 'assests/imgs/amanda-lim--FWqmBtcyqo-unsplash.jpg')">Confirmar</button>
+                                    <button class="btn btn-secondary btn-voltar mt-2" style="display:none;"
+                                        onclick="voltarMenu(this)">Voltar ao menu</button>
+                                    <div class="feedback-message text-success mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Frango Crocante BBQ -->
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow">
+                            <img src="assests/imgs/sultan-abdulrazzaq-UDYjeBwFZf8-unsplash.jpg" class="card-img-top"
+                                alt="Frango Crocante BBQ">
+                            <div class="card-body">
+                                <h5 class="card-title">Frango Crocante BBQ</h5>
+                                <p class="card-text">Filé de Frango Empanado Crocante, Molho Rosé, Queijo prato
+                                    e Cebola Roxa.</p>
+                                <p class="text-danger fw-bold">R$ 25,00</p>
+                                <div class="btn-container">
+                                    <button class="btn btn-warning btn-adicionar"
+                                        onclick="mostrarControles(this, 'Frango Crocante BBQ', 25.00, 'assests/imgs/sultan-abdulrazzaq-UDYjeBwFZf8-unsplash.jpg')">
+                                        <i class="fas fa-cart-plus me-1"></i> Adicionar
+                                    </button>
+                                    <div class="quantidade-controlador" style="display:none;">
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, -1)">-</button>
+                                        <span class="quantidade-value fs-5">1</span>
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, 1)">+</button>
+                                    </div>
+                                    <div class="personalizacoes" style="display:none;">
+                                        <label for="obs-Frango-Crocante" class="form-label">Observações:</label>
+                                        <input type="text" id="obs-Frango-Crocante" class="form-control"
+                                            placeholder="Ex: Sem Cebola, molho à parte">
+                                        <label class="mt-2 form-label">Adicionar ingredientes:</label>
+                                        <div>
+                                            <label>Frango Extra: <input type="number"
+                                                    name="ingredienteQtd-Frango-Crocante" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Molho BBQ: <input type="number"
+                                                    name="ingredienteQtd-Molho-Frango-Crocante" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Queijo Extra: <input type="number"
+                                                    name="ingredienteQtd-Queijo-Frango-Crocante" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-success btn-confirmar mt-2" style="display:none;"
+                                        onclick="confirmarAdicao(this, 'Frango Crocante BBQ', 25.00, 'assests/imgs/sultan-abdulrazzaq-UDYjeBwFZf8-unsplash.jpg')">Confirmar</button>
+                                    <button class="btn btn-secondary btn-voltar mt-2" style="display:none;"
+                                        onclick="voltarMenu(this)">Voltar ao menu</button>
+                                    <div class="feedback-message text-success mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Egg Australiano -->
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow">
+                            <img src="assests/imgs/flavio-teixeira-xMMUNhiN10k-unsplash.jpg" class="card-img-top"
+                                alt="Egg Australiano">
+                            <div class="card-body">
+                                <h5 class="card-title">Egg Australiano</h5>
+                                <p class="card-text">Pão Australiano, Hambúrguer Bovino, Ovo, Maionese Picante e
+                                    Alface.</p>
+                                <p class="text-danger fw-bold">R$ 29,00</p>
+                                <div class="btn-container">
+                                    <button class="btn btn-warning btn-adicionar"
+                                        onclick="mostrarControles(this, 'Egg Australiano', 29.00, 'assests/imgs/flavio-teixeira-xMMUNhiN10k-unsplash.jpg')">
+                                        <i class="fas fa-cart-plus me-1"></i> Adicionar
+                                    </button>
+                                    <div class="quantidade-controlador" style="display:none;">
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, -1)">-</button>
+                                        <span class="quantidade-value fs-5">1</span>
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, 1)">+</button>
+                                    </div>
+                                    <div class="personalizacoes" style="display:none;">
+                                        <label for="obs-Egg-Australiano" class="form-label">Observações:</label>
+                                        <input type="text" id="obs-Egg-Australiano" class="form-control"
+                                            placeholder="Ex: Ovo bem passado, sem Maionese">
+                                        <label class="mt-2 form-label">Adicionar ingredientes:</label>
+                                        <div>
+                                            <label>Ovo Extra: <input type="number"
+                                                    name="ingredienteQtd-Ovo-Egg-Australiano" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Bacon: <input type="number"
+                                                    name="ingredienteQtd-Bacon-Egg-Australiano" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Queijo: <input type="number"
+                                                    name="ingredienteQtd-Queijo-Egg-Australiano" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-success btn-confirmar mt-2" style="display:none;"
+                                        onclick="confirmarAdicao(this, 'Egg Australiano', 29.00, 'assests/imgs/flavio-teixeira-xMMUNhiN10k-unsplash.jpg')">Confirmar</button>
+                                    <button class="btn btn-secondary btn-voltar mt-2" style="display:none;"
+                                        onclick="voltarMenu(this)">Voltar ao menu</button>
+                                    <div class="feedback-message text-success mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Especial Home -->
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow">
+                            <img src="assests/imgs/amirali-mirhashemian-sc5sTPMrVfk-unsplash.jpg" class="card-img-top"
+                                alt="Especial Home">
+                            <div class="card-body">
+                                <h5 class="card-title">Especial Home</h5>
+                                <p class="card-text">Hambúrguer Artesanal, Bacon, Ovo, Alface, Tomate, Rúcula e Maionese
+                                    de Ervas Finas.</p>
+                                <p class="text-danger fw-bold">R$ 32,00</p>
+                                <div class="btn-container">
+                                    <button class="btn btn-warning btn-adicionar"
+                                        onclick="mostrarControles(this, 'Especial Home', 32.00, 'assests/imgs/amirali-mirhashemian-sc5sTPMrVfk-unsplash.jpg')">
+                                        <i class="fas fa-cart-plus me-1"></i> Adicionar
+                                    </button>
+                                    <div class="quantidade-controlador" style="display:none;">
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, -1)">-</button>
+                                        <span class="quantidade-value fs-5">1</span>
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, 1)">+</button>
+                                    </div>
+                                    <div class="personalizacoes" style="display:none;">
+                                        <label for="obs-Especial-Home" class="form-label">Observações:</label>
+                                        <input type="text" id="obs-Especial-Home" class="form-control"
+                                            placeholder="Ex: Sem Rúcula, Maionese à parte">
+                                        <label class="mt-2 form-label">Adicionar ingredientes:</label>
+                                        <div>
+                                            <label>Bacon Extra: <input type="number"
+                                                    name="ingredienteQtd-Bacon-Especial-Home" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Ovo Extra: <input type="number"
+                                                    name="ingredienteQtd-Ovo-Especial-Home" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-success btn-confirmar mt-2" style="display:none;"
+                                        onclick="confirmarAdicao(this, 'Especial Home', 32.00, 'assests/imgs/amirali-mirhashemian-sc5sTPMrVfk-unsplash.jpg')">Confirmar</button>
+                                    <button class="btn btn-secondary btn-voltar mt-2" style="display:none;"
+                                        onclick="voltarMenu(this)">Voltar ao menu</button>
+                                    <div class="feedback-message text-success mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Blue Cheese Burger -->
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow">
+                            <img src="assests/imgs/mike-PxJ9zkM2wdA-unsplash.jpg" class="card-img-top"
+                                alt="Blue Cheese Burger">
+                            <div class="card-body">
+                                <h5 class="card-title">Blue Cheese Burger</h5>
+                                <p class="card-text">Hambúrguer Suculento, Queijo prato, Cebola Roxa, Alface, Tomate e
+                                    Maionese de Ervas Finas.</p>
+                                <p class="text-danger fw-bold">R$ 30,00</p>
+                                <div class="btn-container">
+                                    <button class="btn btn-warning btn-adicionar"
+                                        onclick="mostrarControles(this, 'Blue Cheese Burger', 30.00, 'assests/imgs/mike-PxJ9zkM2wdA-unsplash.jpg')">
+                                        <i class="fas fa-cart-plus me-1"></i> Adicionar
+                                    </button>
+                                    <div class="quantidade-controlador" style="display:none;">
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, -1)">-</button>
+                                        <span class="quantidade-value fs-5">1</span>
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, 1)">+</button>
+                                    </div>
+                                    <div class="personalizacoes" style="display:none;">
+                                        <label for="obs-Blue-Cheese" class="form-label">Observações:</label>
+                                        <input type="text" id="obs-Blue-Cheese" class="form-control"
+                                            placeholder="Ex: Sem Cebola Roxa">
+                                        <label class="mt-2 form-label">Adicionar ingredientes:</label>
+                                        <div>
+                                            <label>Queijo Azul Extra: <input type="number"
+                                                    name="ingredienteQtd-Queijo-Blue-Cheese" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Maionese de Ervas: <input type="number"
+                                                    name="ingredienteQtd-Maionese-Blue-Cheese" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-success btn-confirmar mt-2" style="display:none;"
+                                        onclick="confirmarAdicao(this, 'Blue Cheese Burger', 30.00, 'assests/imgs/mike-PxJ9zkM2wdA-unsplash.jpg')">Confirmar</button>
+                                    <button class="btn btn-secondary btn-voltar mt-2" style="display:none;"
+                                        onclick="voltarMenu(this)">Voltar ao menu</button>
+                                    <div class="feedback-message text-success mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Portuguesa Gourmet -->
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow">
+                            <img src="https://images.unsplash.com/photo-1550317138-10000687a72b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                class="card-img-top" alt="Portuguesa Gourmet">
+                            <div class="card-body">
+                                <h5 class="card-title">Portuguesa Gourmet</h5>
+                                <p class="card-text">Pão de Batata, Queijo mussarela, Presunto, Ovo
+                                    Frito, Tomate, Alface, Maionese Temperada.</p>
+                                <p class="text-danger fw-bold">R$ 32,00</p>
+                                <div class="btn-container">
+                                    <button class="btn btn-warning btn-adicionar"
+                                        onclick="mostrarControles(this, 'Portuguesa Gourmet', 32.00, 'assests/imgs/portuguesa-gourmet.jpg')">
+                                        <i class="fas fa-cart-plus me-1"></i> Adicionar
+                                    </button>
+                                    <div class="quantidade-controlador" style="display:none;">
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, -1)">-</button>
+                                        <span class="quantidade-value fs-5">1</span>
+                                        <button class="quantidade-btn btn btn-outline-secondary btn-sm"
+                                            onclick="alterarQuantidade(this, 1)">+</button>
+                                    </div>
+                                    <div class="personalizacoes" style="display:none;">
+                                        <label for="obs-Portuguesa" class="form-label">Observações:</label>
+                                        <input type="text" id="obs-Portuguesa" class="form-control"
+                                            placeholder="Ex: Sem Presunto, Ovo bem passado">
+                                        <label class="mt-2 form-label">Adicionar ingredientes:</label>
+                                        <div>
+                                            <label>Presunto Extra: <input type="number"
+                                                    name="ingredienteQtd-Presunto-Portuguesa" value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label><br>
+                                            <label>Ovo Extra: <input type="number" name="ingredienteQtd-Ovo-Portuguesa"
+                                                    value="0" min="0"
+                                                    class="form-control form-control-sm d-inline-block w-auto"></label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-success btn-confirmar mt-2" style="display:none;"
+                                        onclick="confirmarAdicao(this, 'Portuguesa Gourmet', 32.00, 'assests/imgs/portuguesa-gourmet.jpg')">Confirmar</button>
+                                    <button class="btn btn-secondary btn-voltar mt-2" style="display:none;"
+                                        onclick="voltarMenu(this)">Voltar ao menu</button>
+                                    <div class="feedback-message text-success mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <!-- TEXTO DEPOIS DO BANNER -->
+    <div class="bg-danger text-white text-center py-3">
+        <a href="https://www.ifood.com.br"
+            class="d-inline-flex align-items-center justify-content-center text-white text-decoration-none"
+            style="gap: 8px;">
+            <img src="assests/imgs/ifood-logo-3.png" alt="iFood" style="height: 24px;">
+            <span style="font-family: Verdana">PEÇA NO IFOOD</span>
+        </a>
+    </div>
+
+    <footer class="bg-dark text-white py-4">
+        <div class="container footer-content">
+            <!-- Horário de funcionamento -->
+            <div class="footer-box">
+                <h5 class="text-warning">Horário de Funcionamento:</h5>
+                <p class="mb-2">
+                    <strong>Domingo a Quinta:</strong><br>
+                    11h às 23h
+                </p>
+                <p class="mb-0">
+                    <strong>Sexta e Sábado:</strong><br>
+                    11h às 23h45
+                </p>
+            </div>
+
+            <!-- Redes sociais e contato -->
+            <div class="footer-box text-center text-lg-end">
+                <a href="https://www.instagram.com/seuInstagram" class="text-white text-decoration-none d-block mb-2"
+                    target="_blank">
+                    <i class="fab fa-instagram me-1"></i> Instagram
+                </a>
+                <a href="https://wa.me/seuNumero" class="text-white text-decoration-none d-block mb-2" target="_blank">
+                    <i class="fab fa-whatsapp me-1"></i> WhatsApp
+                </a>
+                <a href="tel:+55seuNumero" class="text-white text-decoration-none d-block">
+                    <i class="fas fa-phone-alt me-1"></i> Telefone
+                </a>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <p class="m-0">&copy; 2025 Sua Empresa. Todos os direitos reservados.</p>
+        </div>
+
+
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assests/JavaScript/carrinho.js"></script>
+
+</body>
+
+</html>
